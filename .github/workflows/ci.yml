@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: banking
+          POSTGRES_PASSWORD: banking123
+          POSTGRES_DB: banking_crm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run db:generate
+        env:
+          DATABASE_URL: postgresql://banking:banking123@localhost:5432/banking_crm?schema=public
+      - run: npm run build -w @banking-crm/shared-types && npm run build -w @banking-crm/config && npm run build -w @banking-crm/prompts && npm run build -w @banking-crm/scoring-engine && npm run build -w @banking-crm/recommendation-engine && npm run build -w @banking-crm/agent-core
+      - run: npm run db:push
+        env:
+          DATABASE_URL: postgresql://banking:banking123@localhost:5432/banking_crm?schema=public
+      - run: npm run build -w @banking-crm/backend
+      - run: npm run build -w @banking-crm/frontend
+      - run: npm run test -w @banking-crm/scoring-engine

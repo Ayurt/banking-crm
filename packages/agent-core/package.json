@@ -1,0 +1,29 @@
+{
+  "name": "@banking-crm/agent-core",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@banking-crm/config": "*",
+    "@banking-crm/prompts": "*",
+    "@banking-crm/recommendation-engine": "*",
+    "@banking-crm/scoring-engine": "*",
+    "@banking-crm/shared-types": "*",
+    "@langchain/core": "^0.3.26",
+    "@langchain/langgraph": "^0.2.39",
+    "@langchain/openai": "^0.3.17",
+    "openai": "^4.77.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.2"
+  }
+}

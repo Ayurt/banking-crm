@@ -1,0 +1,53 @@
+{
+  "planner": {
+    "type": "object",
+    "required": ["intent", "workflow", "requiredTools", "reasoning"],
+    "properties": {
+      "intent": { "type": "string", "minLength": 1 },
+      "workflow": { "type": "string", "minLength": 1 },
+      "productType": {
+        "type": "string",
+        "enum": ["PERSONAL_LOAN", "CREDIT_CARD", "FIXED_DEPOSIT", "HOME_LOAN", "INSURANCE"]
+      },
+      "requiredTools": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1
+      },
+      "steps": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "reasoning": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["INSUFFICIENT_DATA"] }
+    },
+    "additionalProperties": true
+  },
+  "messaging": {
+    "type": "object",
+    "required": ["message"],
+    "properties": {
+      "message": { "type": "string", "minLength": 1, "maxLength": 800 },
+      "status": { "type": "string", "enum": ["INSUFFICIENT_DATA"] }
+    },
+    "additionalProperties": false
+  },
+  "explanation": {
+    "type": "object",
+    "required": ["summary"],
+    "properties": {
+      "summary": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["INSUFFICIENT_DATA"] }
+    },
+    "additionalProperties": false
+  },
+  "summary": {
+    "type": "object",
+    "required": ["summary"],
+    "properties": {
+      "summary": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["INSUFFICIENT_DATA"] }
+    },
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "banking-crm-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agentic AI Banking CRM for Relationship Managers",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @banking-crm/backend\" \"npm run dev -w @banking-crm/frontend\"",
+    "build": "npm run build -w @banking-crm/shared-types && npm run build -w @banking-crm/config && npm run build -w @banking-crm/prompts && npm run build -w @banking-crm/scoring-engine && npm run build -w @banking-crm/recommendation-engine && npm run build -w @banking-crm/agent-core && npm run build -w @banking-crm/evaluation-engine && npm run build -w @banking-crm/backend && npm run build -w @banking-crm/frontend",
+    "evaluate": "npm run test -w @banking-crm/evaluation-engine",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma db push --force-reset && npm run db:seed",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "concurrently": "^9.1.0",
+    "prisma": "^6.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "bcrypt": "^5.1.1",
+    "@types/bcrypt": "^5.0.2"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
