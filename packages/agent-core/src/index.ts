@@ -11,6 +11,13 @@ export type { AgentRuntimeDeps, AgentDependencies } from './interfaces/agent-run
 export { toAgentQueryResponse } from './utils/response';
 export { WORKFLOW_VERSION, NODE_TIMEOUTS } from './utils/workflow-constants';
 export { detectProductType, resolveWorkflow, DEFAULT_EXECUTION_PLAN } from './utils/product-detection';
+export {
+  parseQueryFilters,
+  parseIndianAmount,
+  mergeQueryFilters,
+  formatLoanAmountInr,
+  canAffordLoanAmount,
+} from './utils/query-filters';
 export { initializeAgent } from './agents/initialize.agent';
 export { plannerAgent } from './agents/planner.agent';
 export { memoryAgent } from './agents/memory.agent';

@@ -26,6 +26,7 @@ export async function scoringAgent(
     state.loanHistory,
     state.customers.length > 100 ? 60 : 40,
     state.campaigns,
+    state.filters ?? {},
   );
 
   const durationMs = Date.now() - start;

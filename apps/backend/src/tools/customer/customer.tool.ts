@@ -37,6 +37,16 @@ export class CustomerTool extends BaseTool<CustomerToolInput, CustomerToolOutput
       if (input.filters.minCreditScore) {
         customers = customers.filter((c) => c.creditScore >= input.filters!.minCreditScore!);
       }
+      if (input.filters.minLoanAmount) {
+        // Affordability: monthly income × 20 should cover requested loan size
+        customers = customers.filter(
+          (c) => c.monthlyIncome * 20 >= input.filters!.minLoanAmount!,
+        );
+      }
+      if (input.filters.city) {
+        const city = input.filters.city.toLowerCase();
+        customers = customers.filter((c) => c.city?.toLowerCase() === city);
+      }
     } else {
       throw new CustomerNotFoundException();
     }

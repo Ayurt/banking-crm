@@ -28,6 +28,7 @@ export function createInitialState(params: {
     workflow: '',
     executionPlan: [],
     productType: 'PERSONAL_LOAN',
+    filters: {},
     customerIds: [],
     customers: [],
     transactions: [],

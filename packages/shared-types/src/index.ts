@@ -191,6 +191,17 @@ export interface WorkflowExecutionMeta {
   llmLatencyMs?: number;
 }
 
+/** Structured constraints extracted from the RM natural-language query. */
+export interface QueryFilters {
+  minIncome?: number;
+  minCreditScore?: number;
+  minLoanAmount?: number;
+  maxLoanAmount?: number;
+  city?: string;
+  /** Free-text constraints that must appear in outreach drafts (e.g. "min 5 lakh loan"). */
+  messageConstraints?: string[];
+}
+
 export interface AgentState {
   requestId: string;
   executionId: string;
@@ -202,6 +213,8 @@ export interface AgentState {
   workflow: string;
   executionPlan: string[];
   productType: ProductType;
+  /** Filters parsed from the RM query (loan amount, income, city, etc.). */
+  filters: QueryFilters;
   customerIds: string[];
   customers: Customer[];
   transactions: Transaction[];
@@ -225,6 +238,7 @@ export interface PlannerOutput {
   intent: string;
   productType: ProductType;
   steps: string[];
+  filters?: QueryFilters;
 }
 
 export interface ToolResult<T> {

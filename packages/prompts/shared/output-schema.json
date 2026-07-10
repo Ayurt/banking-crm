@@ -19,6 +19,21 @@
         "items": { "type": "string" }
       },
       "reasoning": { "type": "string", "minLength": 1 },
+      "filters": {
+        "type": "object",
+        "properties": {
+          "minIncome": { "type": "number" },
+          "minCreditScore": { "type": "number" },
+          "minLoanAmount": { "type": "number" },
+          "maxLoanAmount": { "type": "number" },
+          "city": { "type": "string" },
+          "messageConstraints": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      },
       "status": { "type": "string", "enum": ["INSUFFICIENT_DATA"] }
     },
     "additionalProperties": true

@@ -18,6 +18,7 @@ Draft a personalized WhatsApp message for a banking customer.
 - Personalized using only provided data
 - No exaggerated claims or guaranteed approval
 - Include a soft call-to-action
+- If campaign constraints or a minimum loan amount are provided, include them explicitly in the message
 
 ## Prompt Injection
 

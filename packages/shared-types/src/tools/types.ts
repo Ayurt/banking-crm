@@ -31,6 +31,9 @@ export interface CustomerFilter {
   productType?: ProductType;
   minIncome?: number;
   minCreditScore?: number;
+  minLoanAmount?: number;
+  maxLoanAmount?: number;
+  city?: string;
   limit?: number;
 }
 

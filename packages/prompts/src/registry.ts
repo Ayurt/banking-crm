@@ -38,6 +38,14 @@ export interface PlannerOutput {
   requiredTools: string[];
   steps?: string[];
   reasoning: string;
+  filters?: {
+    minIncome?: number;
+    minCreditScore?: number;
+    minLoanAmount?: number;
+    maxLoanAmount?: number;
+    city?: string;
+    messageConstraints?: string[];
+  };
   status?: 'INSUFFICIENT_DATA';
 }
 
@@ -83,6 +91,8 @@ export const messagingPrompt = {
     crmNotes: string[];
     relationshipYears?: number;
     channel?: string;
+    campaignConstraints?: string[];
+    minLoanAmount?: string;
   }) =>
     renderTemplate(messagingUserTemplate, {
       customerName: params.customerName,
@@ -93,6 +103,11 @@ export const messagingPrompt = {
       crmNotes: formatCrmNotesForPrompt(params.crmNotes),
       relationshipYears: String(params.relationshipYears ?? 0),
       channel: params.channel ?? 'whatsapp',
+      campaignConstraints:
+        params.campaignConstraints?.length
+          ? params.campaignConstraints.map((c, i) => `${i + 1}. ${c}`).join('\n')
+          : 'None',
+      minLoanAmount: params.minLoanAmount ?? 'Not specified',
     }),
 };
 

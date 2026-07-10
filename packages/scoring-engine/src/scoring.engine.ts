@@ -5,6 +5,7 @@ import type {
   CustomerScore,
   Loan,
   ProductType,
+  QueryFilters,
   Transaction,
 } from '@banking-crm/shared-types';
 import { getBusinessRules } from './rules/config';
@@ -26,11 +27,12 @@ export class ScoringEngine {
     crmNotes: CrmNote[],
     loans: Loan[],
     campaigns: CampaignRecord[] = [],
+    filters: QueryFilters = {},
   ): CustomerScore | null {
     const validation = validateCustomerData(customer);
     if (!validation.valid) return null;
 
-    const eligibility = checkPersonalLoanEligibility(customer, loans, productType);
+    const eligibility = checkPersonalLoanEligibility(customer, loans, productType, { filters });
     const { total: baseConversion, breakdown } = calculateConversionScore(
       customer,
       transactions,
@@ -100,9 +102,10 @@ export class ScoringEngine {
     loans: Loan[],
     minScore = 40,
     campaigns: CampaignRecord[] = [],
+    filters: QueryFilters = {},
   ): CustomerScore[] {
     return customers
-      .map((c) => this.scoreCustomer(c, productType, transactions, crmNotes, loans, campaigns))
+      .map((c) => this.scoreCustomer(c, productType, transactions, crmNotes, loans, campaigns, filters))
       .filter((s): s is CustomerScore => s !== null && s.conversionScore >= minScore)
       .sort((a, b) => b.conversionScore - a.conversionScore);
   }

@@ -27,6 +27,7 @@ const AgentGraphState = Annotation.Root({
   workflow: Annotation<string>,
   executionPlan: Annotation<string[]>,
   productType: Annotation<AgentState['productType']>,
+  filters: Annotation<AgentState['filters']>,
   customerIds: Annotation<string[]>,
   customers: Annotation<AgentState['customers']>,
   transactions: Annotation<AgentState['transactions']>,

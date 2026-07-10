@@ -1,12 +1,20 @@
 import { messagingPrompt, parseAndValidateWithRetry, type MessagingOutput } from '@banking-crm/prompts';
 import type { OutreachMessage, Recommendation } from '@banking-crm/shared-types';
 import { createLlm } from '../utils/llm';
+import { formatLoanAmountInr } from '../utils/query-filters';
 import { addConfidence, addStep, emitStep } from '../utils/steps';
 import type { AgentRuntimeDeps } from '../interfaces/agent-runtime';
 import type { GraphState } from '../state/agent-state';
 
-function buildFallbackMessage(name: string, rec: Recommendation): string {
-  return `Hi ${name}, based on your banking relationship with us, you may qualify for our ${rec.productName}. ${rec.reasons[0] ?? 'You meet our eligibility criteria'}. Reply YES to learn more.`;
+function buildFallbackMessage(
+  name: string,
+  rec: Recommendation,
+  minLoanAmount?: number,
+): string {
+  const amountLine = minLoanAmount
+    ? ` This offer is for a minimum loan of ${formatLoanAmountInr(minLoanAmount)}.`
+    : '';
+  return `Hi ${name}, based on your banking relationship with us, you may qualify for our ${rec.productName}.${amountLine} ${rec.reasons[0] ?? 'You meet our eligibility criteria'}. Reply YES to learn more.`;
 }
 
 export async function messagingAgent(
@@ -22,6 +30,15 @@ export async function messagingAgent(
   const llm = createLlm();
   const messages: OutreachMessage[] = [];
   let tokensUsed = 0;
+  const filters = state.filters ?? {};
+  const campaignConstraints = [
+    ...(filters.messageConstraints ?? []),
+    ...(filters.minLoanAmount
+      ? [
+          `You MUST explicitly mention that this is a minimum ${formatLoanAmountInr(filters.minLoanAmount)} loan (at least ${formatLoanAmountInr(filters.minLoanAmount)}).`,
+        ]
+      : []),
+  ];
 
   for (const rec of state.recommendations.slice(0, 10)) {
     const customer = state.customers.find((c) => c.id === rec.customerId);
@@ -56,6 +73,10 @@ export async function messagingAgent(
               crmNotes: enrichedNotes,
               relationshipYears: customer.relationshipYears,
               channel: 'whatsapp',
+              campaignConstraints,
+              minLoanAmount: filters.minLoanAmount
+                ? formatLoanAmountInr(filters.minLoanAmount)
+                : undefined,
             }),
           },
         ]);
@@ -66,14 +87,29 @@ export async function messagingAgent(
         } else if (raw && !raw.startsWith('{')) {
           content = raw;
         } else {
-          content = buildFallbackMessage(customer.name, rec);
+          content = buildFallbackMessage(customer.name, rec, filters.minLoanAmount);
         }
+
+        // Guarantee amount mention even if the LLM omitted it
+        if (
+          filters.minLoanAmount &&
+          !content.toLowerCase().includes('lakh') &&
+          !content.includes(String(filters.minLoanAmount)) &&
+          !content.includes('5,00,000') &&
+          !content.includes('500000')
+        ) {
+          content = content.replace(
+            /\.\s*$/,
+            `. This is for a minimum loan of ${formatLoanAmountInr(filters.minLoanAmount)}.`,
+          );
+        }
+
         tokensUsed += 150;
       } catch {
-        content = buildFallbackMessage(customer.name, rec);
+        content = buildFallbackMessage(customer.name, rec, filters.minLoanAmount);
       }
     } else {
-      content = buildFallbackMessage(customer.name, rec);
+      content = buildFallbackMessage(customer.name, rec, filters.minLoanAmount);
     }
 
     messages.push({
@@ -113,7 +149,7 @@ export async function messagingAgent(
         agentName: 'Messaging',
         promptVersion: messagingPrompt.version,
         tokensUsed,
-        details: { count: messages.length },
+        details: { count: messages.length, filters },
       },
     ],
   };

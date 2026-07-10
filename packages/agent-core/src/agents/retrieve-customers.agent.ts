@@ -11,15 +11,35 @@ export async function retrieveCustomersAgent(
   state: GraphState,
   deps: AgentRuntimeDeps,
 ): Promise<Partial<GraphState>> {
+  const filters = state.filters ?? {};
+  const filterHint = filters.minLoanAmount
+    ? ` (min loan ₹${filters.minLoanAmount.toLocaleString('en-IN')})`
+    : '';
+
   emitStep(deps, {
     agentName: 'Customer Retrieval',
     status: 'running',
-    message: 'Retrieving customers...',
+    message: `Retrieving customers${filterHint}...`,
   });
 
   const customerResult = await withNodeTimeout(
     () =>
-      withRetryResult(() => deps.customerTool.retrieve(state.productType, RETRIEVAL_LIMIT)),
+      withRetryResult(() =>
+        deps.customerTool.safeExecute({
+          filters: {
+            productType: state.productType,
+            limit: RETRIEVAL_LIMIT,
+            minIncome: filters.minIncome,
+            minCreditScore: filters.minCreditScore,
+            minLoanAmount: filters.minLoanAmount,
+            city: filters.city,
+          },
+        }).then((r) =>
+          r.success
+            ? { ...r, data: r.data?.customers }
+            : { ...r, data: undefined },
+        ),
+      ),
     NODE_TIMEOUTS.retrieval,
     'Customer Retrieval',
   );
@@ -44,7 +64,7 @@ export async function retrieveCustomersAgent(
     agentName: 'Customer Retrieval',
     toolName: 'CustomerTool',
     status: 'completed',
-    message: `Retrieved ${customers.length} customers`,
+    message: `Retrieved ${customers.length} customers${filterHint}`,
     durationMs: customerResult.durationMs,
   });
 
@@ -61,7 +81,7 @@ export async function retrieveCustomersAgent(
       agentName: 'Customer Retrieval',
       toolName: 'CustomerTool',
       status: 'completed',
-      message: `${customers.length} customers retrieved`,
+      message: `${customers.length} customers retrieved${filterHint}`,
       durationMs: customerResult.durationMs,
     }),
   };

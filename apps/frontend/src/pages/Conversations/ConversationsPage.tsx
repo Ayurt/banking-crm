@@ -13,6 +13,7 @@ const { TextArea } = Input;
 
 const SAMPLE_QUERIES = [
   'Find high-value customers likely to convert for a personal loan this month and generate personalized WhatsApp messages.',
+  'Find customers who can take a loan of at least 5 lakh and prepare a WhatsApp message draft mentioning the minimum 5 lakh loan.',
   'Identify customers eligible for premium credit cards with strong transaction history.',
   'Find customers suitable for fixed deposits with high average balance.',
 ];
