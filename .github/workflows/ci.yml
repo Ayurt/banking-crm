@@ -34,10 +34,11 @@ jobs:
       - run: npm run db:generate
         env:
           DATABASE_URL: postgresql://banking:banking123@localhost:5432/banking_crm?schema=public
-      - run: npm run build -w @banking-crm/shared-types && npm run build -w @banking-crm/config && npm run build -w @banking-crm/prompts && npm run build -w @banking-crm/scoring-engine && npm run build -w @banking-crm/recommendation-engine && npm run build -w @banking-crm/agent-core
+      - run: npm run build -w @banking-crm/shared-types && npm run build -w @banking-crm/config && npm run build -w @banking-crm/prompts && npm run build -w @banking-crm/scoring-engine && npm run build -w @banking-crm/recommendation-engine && npm run build -w @banking-crm/agent-core && npm run build -w @banking-crm/evaluation-engine
       - run: npm run db:push
         env:
           DATABASE_URL: postgresql://banking:banking123@localhost:5432/banking_crm?schema=public
       - run: npm run build -w @banking-crm/backend
       - run: npm run build -w @banking-crm/frontend
       - run: npm run test -w @banking-crm/scoring-engine
+      - run: npm run test -w @banking-crm/agent-core -- --testPathPattern=query-filters
