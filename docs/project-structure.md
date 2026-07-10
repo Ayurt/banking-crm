@@ -18,8 +18,7 @@ banking-crm/
 ├── prisma/
 ├── scripts/
 ├── docker/
-├── docs/
-└── .cursor/
+└── docs/
 ```
 
 ## Backend Layers
